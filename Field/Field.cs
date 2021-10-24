@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Project.Classes.Pathfinding;
-using UnityEngine;
 using BlockType = Project.Classes.Field.FieldSpace.BlockType;
 
 namespace Project.Classes.Field {
@@ -88,9 +87,7 @@ namespace Project.Classes.Field {
 
             OnFieldSizeChanged?.Invoke();
         }
-
-        public Field(Vector2Int sizes, params Pawn[] pawns) : this(sizes.x, sizes.y, pawns) { }
-
+        
         private Field(FieldSpace[,] fieldSpaces, params Pawn[] pawns) {
             YSize = fieldSpaces.GetLength(0);
             XSize = fieldSpaces.GetLength(1);

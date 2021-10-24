@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Project.Classes.Field;
 using Project.Classes.Player;
-using UnityEngine;
 
 namespace Project.Classes {
     public class Game {
@@ -189,7 +188,6 @@ namespace Project.Classes {
 
         public void Restart(List<Player.Player> players) {
             if (!Players.HasSameContent(players)) {
-                Debug.Log(":(");
                 return;
             }
             
