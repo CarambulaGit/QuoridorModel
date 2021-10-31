@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Project.Classes.Field;
 
 namespace Project.Classes.Player {
-    public abstract class Player {
+    public abstract class Player : ICloneable {
         public bool myTurn;
         private bool _moveDone;
 
@@ -25,6 +25,8 @@ namespace Project.Classes.Player {
                 NumOfWallsChanged?.Invoke();
             }
         }
+
+        public bool CanSetWall => NumOfWalls > 0;
 
         public event Action NumOfWallsChanged;
 
@@ -48,7 +50,7 @@ namespace Project.Classes.Player {
         }
 
         public bool TrySetWall(Wall wall) {
-            if (Pawn == null || !myTurn || _moveDone || NumOfWalls <= 0 || !Pawn.Field.TrySetWall(wall)) {
+            if (Pawn == null || !myTurn || _moveDone || !CanSetWall || !Pawn.Field.TrySetWall(wall)) {
                 return false;
             }
 
@@ -71,5 +73,7 @@ namespace Project.Classes.Player {
             myTurn = false;
             _moveDone = false;
         }
+
+        public abstract object Clone();
     }
 }

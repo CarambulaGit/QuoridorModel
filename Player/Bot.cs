@@ -5,10 +5,10 @@ using Project.Classes.Field;
 
 namespace Project.Classes.Player {
     public abstract class Bot : Player {
-        public Bot(Pawn pawn = null) : base(pawn) { }
+        protected Bot(Pawn pawn = null, int numOfWalls = Consts.DEFAULT_NUM_OF_WALLS) : base(pawn, numOfWalls) { }
         
         public sealed override async Task MakeMove(CancellationToken ct) {
-            await Task.Delay(100);
+            await Task.Delay(100, ct);
             GetNextMove()();
             await base.MakeMove(ct);
         }
