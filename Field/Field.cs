@@ -95,8 +95,8 @@ namespace Project.Classes.Field {
             FieldSpaces = fieldSpaces;
             Pawns.AddRange(pawns);
 
-            var n = YSize * 2 - 1;
-            var m = XSize * 2 - 1;
+            var n = YSize;
+            var m = XSize;
             for (var y = 0; y < n; y++) {
                 for (var x = 0; x < m; x++) {
                     if (y.IsOdd() && x.IsOdd()) {
@@ -235,7 +235,7 @@ namespace Project.Classes.Field {
         }
 
         public object Clone() {
-            var fieldSpaces = (FieldSpace[,]) FieldSpaces.Clone();
+            var fieldSpaces = FieldSpaces.DeepCopy();
             var result = new Field(fieldSpaces);
             var players = Pawns.Select(pawn => pawn.Owner.Clone()).Cast<Player.Player>().ToList();
             var pawns = new Pawn[Pawns.Count];
