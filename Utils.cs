@@ -1,10 +1,20 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Project.Classes {
     public static class Utils {
         public static Random Random = new Random();
+
+        public static T Max<T>(params T[] elems) where T: IComparable {
+            return elems.Max();
+        }
+
+        public static T Min<T>(params T[] elems) where T: IComparable {
+            return elems.Min();
+        }
+
         public static bool IsEven(this int num) => num % 2 == 0;
         public static bool IsOdd(this int num) => num % 2 == 1;
 
@@ -88,6 +98,39 @@ namespace Project.Classes {
             }
 
             return true;
+        }
+    }
+
+    public class Pair<T, V> {
+        public T TElem { get; private set; }
+        public V GElem { get; private set; }
+
+        public Pair(T tElem, V gElem) {
+            TElem = tElem;
+            GElem = gElem;
+        }
+    }
+
+    public class PairsList<T, V> : IEnumerable<Pair<T,V>> {
+        private List<Pair<T, V>> _pairs = new List<Pair<T, V>>();
+
+        public void AddPair(Pair<T, V> pair) {
+            _pairs.Add(pair);
+        }
+
+        public void AddPair(T tElem, V vElem) {
+            _pairs.Add(new Pair<T, V>(tElem, vElem));
+        }
+
+        public Pair<T, V> GetPair(int index) {
+            return _pairs[index];
+        }
+
+        public IEnumerator<Pair<T, V>> GetEnumerator() {
+            return _pairs.GetEnumerator();
+        }
+        IEnumerator IEnumerable.GetEnumerator() {
+            return GetEnumerator();
         }
     }
 }
