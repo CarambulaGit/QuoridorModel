@@ -175,5 +175,9 @@ namespace Project.Classes.Field {
             Pos = pos;
             WinCondition = winCondition;
         }
+
+        public Pawn Copy(Field field, Player.Player owner) {
+            return new Pawn(Pos, owner, field, WinCondition);
+        }
     }
 }
