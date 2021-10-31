@@ -5,6 +5,7 @@ using Project.Classes.Pathfinding;
 using BlockType = Project.Classes.Field.FieldSpace.BlockType;
 
 namespace Project.Classes.Field {
+    
     public struct Point {
         public int Y { get; }
         public int X { get; }
@@ -235,8 +236,16 @@ namespace Project.Classes.Field {
 
         public object Clone() {
             var fieldSpaces = (FieldSpace[,]) FieldSpaces.Clone();
-            var pawns = (Pawn[]) Pawns.ToArray().Clone();
-            return new Field(fieldSpaces, pawns);
+            var result = new Field(fieldSpaces);
+            var players = Pawns.Select(pawn => pawn.Owner.Clone()).Cast<Player.Player>().ToList();
+            var pawns = new Pawn[Pawns.Count];
+            for (var i = 0; i < Pawns.Count; i++) {
+                pawns[i] = Pawns[i].Copy(result, players[i]); // todo test this
+                players[i].Pawn = pawns[i];
+                result.TryAddPawn(pawns[i]);
+            }
+            // var pawns = (Pawn[]) Pawns.ToArray().Clone();
+            return result;
         }
     }
 }
