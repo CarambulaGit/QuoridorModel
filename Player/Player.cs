@@ -26,6 +26,8 @@ namespace Project.Classes.Player {
             }
         }
 
+        public void DecrementNumOfWalls() => NumOfWalls--;
+
         public bool CanSetWall => NumOfWalls > 0;
 
         public event Action NumOfWallsChanged;
@@ -54,7 +56,7 @@ namespace Project.Classes.Player {
                 return false;
             }
 
-            NumOfWalls--;
+            DecrementNumOfWalls();
             _moveDone = true;
             return true;
         }

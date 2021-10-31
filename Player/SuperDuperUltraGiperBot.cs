@@ -7,10 +7,10 @@ using Project.Classes.Pathfinding;
 
 namespace Project.Classes.Player {
     public class SuperDuperUltraGiperBot : Bot {
-        private const int DEFAULT_DEPTH = 3;
+        private const int DEFAULT_DEPTH = 1;
         private const float TURN_WEIGHT = 1f;
         private const float NUM_OF_WALLS_WEIGHT = 1f;
-        private const float PATH_COUNT_WEIGHT = 3f;
+        private const float PATH_COUNT_WEIGHT = 5f;
         private int _depth;
         private bool _isFirst;
         private Action _move; // todo
@@ -99,7 +99,7 @@ namespace Project.Classes.Player {
             
             result += myMove ? 1 : -1 * TURN_WEIGHT;
             result += (myWallsCount - otherWallsCount) * NUM_OF_WALLS_WEIGHT;
-            result += (myShortestPath - otherShortestPath) * PATH_COUNT_WEIGHT;
+            result += (otherShortestPath - myShortestPath) * PATH_COUNT_WEIGHT;
             return result;
         }
 
@@ -119,8 +119,9 @@ namespace Project.Classes.Player {
                     void Move() => TryMovePawn(possiblePos);
                     result.AddPair(newField, Move);
                 }
-
-                throw new Exception($"Can't move to {possiblePos}");
+                else {
+                    throw new Exception($"Can't move to {possiblePos}");
+                }
             }
         }
 
@@ -132,11 +133,13 @@ namespace Project.Classes.Player {
             foreach (var possiblePos in field.GetPossibleWallPositions()) {
                 var newField = (Field.Field) field.Clone();
                 if (newField.TrySetWall(possiblePos)) {
+                    newField.Pawns[index].Owner.DecrementNumOfWalls();
                     void Move() => TrySetWall(possiblePos);
                     result.AddPair(newField, Move);
                 }
-
-                throw new Exception($"Can't place wall to {possiblePos}");
+                else {
+                    throw new Exception($"Can't place wall to {possiblePos}");
+                }
             }
         }
 
