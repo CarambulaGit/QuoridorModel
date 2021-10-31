@@ -13,12 +13,17 @@ namespace Project.Classes.Pathfinding {
             _finishes = CalculateFinishes(field.GetLength(0), field.GetLength(1), winningCondition);
             foreach (var finish in _finishes) {
                 var path = AStar<FieldSpace>.FindPath(field, start, finish, heuristicLength);
+                if (path == null) {
+                    continue;
+                }
+
                 if (path.Count == 1) {
                     return path;
                 }
-                
+
                 if (path.Count < _path.Count || _path.Count == 0) {
-                    _path = path;
+                    _path.Clear();
+                    _path.AddRange(path);
                 }
             }
 
@@ -48,8 +53,8 @@ namespace Project.Classes.Pathfinding {
 
         private static List<Point> CalculateFinishes(int fieldYLen, int fieldXLen, Predicate<Point> winningCondition) {
             _finishes.Clear();
-            for (var y = 0; y < fieldYLen; y++) {
-                for (var x = 0; x < fieldXLen; x++) {
+            for (var y = 0; y < fieldYLen; y += 2) {
+                for (var x = 0; x < fieldXLen; x +=2) {
                     var curPoint = new Point(y, x);
                     if (winningCondition(curPoint)) {
                         _finishes.Add(curPoint);
