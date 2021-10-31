@@ -89,8 +89,8 @@ namespace Project.Classes {
 
         public static Game CreatePlayerVsBot(bool playerMoveFirst = true) {
             var players = playerMoveFirst
-                ? new List<Player.Player> {new LocalPlayer(), new RandomBot()}
-                : new List<Player.Player> {new RandomBot(), new LocalPlayer()};
+                ? new List<Player.Player> {new LocalPlayer(), new SuperDuperUltraGiperBot()}
+                : new List<Player.Player> {new SuperDuperUltraGiperBot(), new LocalPlayer()};
             return new Game(Consts.DEFAULT_FIELD_SIZE_Y, Consts.DEFAULT_FIELD_SIZE_X, players);
         }
 
@@ -127,9 +127,13 @@ namespace Project.Classes {
                 }
                 await Task.Yield();
             }
-            
+
             CurrentPlayer.myTurn = false;
             CurrentPlayer = _playersEnumerator.GetNextCycled();
+            
+            if (task.IsFaulted) {
+                throw task.Exception.InnerExceptions[0];
+            }
         }
 
         public void StartGame() {
