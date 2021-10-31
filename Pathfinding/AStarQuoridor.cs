@@ -13,6 +13,10 @@ namespace Project.Classes.Pathfinding {
             _finishes = CalculateFinishes(field.GetLength(0), field.GetLength(1), winningCondition);
             foreach (var finish in _finishes) {
                 var path = AStar<FieldSpace>.FindPath(field, start, finish, heuristicLength);
+                if (path.Count == 1) {
+                    return path;
+                }
+                
                 if (path.Count < _path.Count || _path.Count == 0) {
                     _path = path;
                 }
