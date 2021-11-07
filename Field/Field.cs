@@ -5,7 +5,6 @@ using Project.Classes.Pathfinding;
 using BlockType = Project.Classes.Field.FieldSpace.BlockType;
 
 namespace Project.Classes.Field {
-    
     public struct Point {
         public int Y { get; }
         public int X { get; }
@@ -23,6 +22,14 @@ namespace Project.Classes.Field {
             return new Point(p1.Y - p2.Y, p1.X - p2.X);
         }
 
+        public static Point operator *(Point p, int num) {
+            return new Point(p.Y * num, p.X * num);
+        }
+
+        public static Point operator /(Point p, int num) {
+            return new Point(p.Y / num, p.X / num);
+        }
+        
         public static int ManhattanLength(Point p1, Point p2) {
             return Math.Abs(p1.X - p2.X) + Math.Abs(p1.Y - p2.Y);
         }
@@ -42,6 +49,11 @@ namespace Project.Classes.Field {
 
             return X == point.X && Y == point.Y;
         }
+
+        public void Deconstruct(out int y, out int x) {
+            y = Y;
+            x = X;
+        }
     }
 
     public class Field : ICloneable {
@@ -50,6 +62,7 @@ namespace Project.Classes.Field {
         public int YSize { get; }
 
         public FieldSpace[,] FieldSpaces { get; }
+        public int NumOfHorWalls { get; private set; }
         private List<Pawn> _pawns = new List<Pawn>();
         private List<Wall> _allWalls = new List<Wall>();
         public List<Pawn> Pawns => new List<Pawn>((Pawn[]) _pawns.ToArray().Clone());
@@ -88,15 +101,16 @@ namespace Project.Classes.Field {
 
             OnFieldSizeChanged?.Invoke();
         }
-        
+
         private Field(FieldSpace[,] fieldSpaces, params Pawn[] pawns) {
-            YSize = fieldSpaces.GetLength(0);
-            XSize = fieldSpaces.GetLength(1);
+            var n = fieldSpaces.GetLength(0);
+            var m = fieldSpaces.GetLength(1);
+            YSize = (n + 1) / 2;
+            XSize = (m + 1) / 2;
             FieldSpaces = fieldSpaces;
             Pawns.AddRange(pawns);
 
-            var n = YSize;
-            var m = XSize;
+
             for (var y = 0; y < n; y++) {
                 for (var x = 0; x < m; x++) {
                     if (y.IsOdd() && x.IsOdd()) {
@@ -127,14 +141,14 @@ namespace Project.Classes.Field {
         }
 
         private bool CheckWallPosition(Wall wall) {
-            if (FieldSpaces[wall.Y, wall.X].Type != BlockType.Empty) {
-                return false;
-            }
-
             if (wall.X < 1 ||
                 wall.Y < 1 ||
                 wall.X >= FieldSpaces.GetLength(1) - 1 ||
                 wall.Y >= FieldSpaces.GetLength(0) - 1) {
+                return false;
+            }
+
+            if (FieldSpaces[wall.Y, wall.X].Type != BlockType.Empty) {
                 return false;
             }
 
@@ -154,6 +168,10 @@ namespace Project.Classes.Field {
         }
 
         private bool IsThereWayToFinish(Wall wall) {
+            if (NumOfHorWalls <= XSize / 2) {
+                return true;
+            }
+
             var fieldWithNewWall = new Field(FieldSpaces.DeepCopy());
             fieldWithNewWall.SetWall(wall);
             return AStarQuoridor.IsTherePaths(fieldWithNewWall.FieldSpaces, Pawns, Point.ManhattanLengthFloat);
@@ -167,12 +185,19 @@ namespace Project.Classes.Field {
             return true;
         }
 
+
+        public void UnsafeSetWall(Wall wall) {
+            SetWall(wall);
+            OnWallPlaced?.Invoke(wall);
+        }
+
         private void SetWall(Wall wall) {
             FieldSpaces[wall.Y, wall.X].Type = BlockType.Wall;
             switch (wall.WallType) {
                 case Wall.Type.Horizontal:
                     FieldSpaces[wall.Y, wall.X - 1].Type = BlockType.Wall;
                     FieldSpaces[wall.Y, wall.X + 1].Type = BlockType.Wall;
+                    NumOfHorWalls++;
                     break;
                 case Wall.Type.Vertical:
                     FieldSpaces[wall.Y - 1, wall.X].Type = BlockType.Wall;
@@ -204,7 +229,7 @@ namespace Project.Classes.Field {
                     }
                 }
             }
-            
+
             OnFieldCleared?.Invoke();
         }
 
@@ -244,6 +269,7 @@ namespace Project.Classes.Field {
                 players[i].Pawn = pawns[i];
                 result.TryAddPawn(pawns[i]);
             }
+
             // var pawns = (Pawn[]) Pawns.ToArray().Clone();
             return result;
         }
