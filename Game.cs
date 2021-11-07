@@ -66,14 +66,14 @@ namespace Project.Classes {
             var yLen = Field.FieldSpaces.GetLength(0);
             var xLen = Field.FieldSpaces.GetLength(1);
             var positions = new Point[4] {
-                new Point(0, xLen / 2),
                 new Point(yLen - 1, xLen / 2),
+                new Point(0, xLen / 2),
                 new Point(yLen / 2, 0),
                 new Point(yLen / 2, xLen - 1)
             };
             var winConditions = new Predicate<Point>[] {
-                p => p.Y == yLen - 1,
                 p => p.Y == 0,
+                p => p.Y == yLen - 1,
                 p => p.X == xLen - 1,
                 p => p.X == 0,
             };
