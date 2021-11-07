@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Project.Classes.Field;
-using Debug = UnityEngine.Debug;
 
 namespace Project.Classes.Pathfinding {
     public static class AStarQuoridor {
         private static List<Point> _finishes = new List<Point>();
-        public static Stopwatch stopWatch = new Stopwatch();
+        // public static Stopwatch stopWatch = new Stopwatch();
 
 
         public static List<Point> FindPath(FieldSpace[,] field, Point start, Predicate<Point> winningCondition,
@@ -21,10 +20,10 @@ namespace Project.Classes.Pathfinding {
             _finishes = CalculateFinishes(field.GetLength(0), field.GetLength(1), winningCondition)
                 .OrderBy(finish => Point.ManhattanLengthFloat(start, finish)).ToList();
             foreach (var finish in _finishes) {
-                stopWatch.Start();
+                // stopWatch.Start();
                 var path = AStar<FieldSpace>.FindPath(field, start, finish, heuristicLength);
-                stopWatch.Stop();
-                Debug.Log(stopWatch.ElapsedMilliseconds);
+                // stopWatch.Stop();
+                // Debug.Log(stopWatch.ElapsedMilliseconds);
                 if (path == null) {
                     continue;
                 }
