@@ -31,6 +31,8 @@ namespace Project.Classes.Player {
         public bool CanSetWall => NumOfWalls > 0;
 
         public event Action NumOfWallsChanged;
+        public event Action<Wall> OnWallPlaced;
+        public event Action<Point, Point> OnPawnMoved;
 
         public Player(Pawn pawn = null, int numOfWalls = Consts.DEFAULT_NUM_OF_WALLS) {
             Pawn = pawn;
@@ -58,15 +60,18 @@ namespace Project.Classes.Player {
 
             DecrementNumOfWalls();
             _moveDone = true;
+            OnWallPlaced?.Invoke(wall);
             return true;
         }
 
         public bool TryMovePawn(Point newPos) {
+            var oldPos = Pawn.Pos;
             if (Pawn == null || !myTurn || _moveDone || !Pawn.TryMove(newPos)) {
                 return false;
             }
 
             _moveDone = true;
+            OnPawnMoved?.Invoke(oldPos, newPos);
             return true;
         }
 
