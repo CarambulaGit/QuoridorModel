@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Project.Classes.Field;
 using Project.Classes.Pathfinding;
-using UnityEngine;
 
 namespace Project.Classes.Player {
     public class SuperDuperUltraGiperBot : Bot {
