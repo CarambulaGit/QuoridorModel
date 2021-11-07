@@ -20,7 +20,6 @@
         public const string SET_WALL_COMMAND = "wall";
         public const string MOVE_COMMAND = "move";
         public const string JUMP_COMMAND = "jump";
-
         #endregion
     }
 }
