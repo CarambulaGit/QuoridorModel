@@ -62,7 +62,6 @@ namespace Project.Classes.Field {
         public int YSize { get; }
 
         public FieldSpace[,] FieldSpaces { get; }
-        public int NumOfHorWalls { get; private set; }
         private List<Pawn> _pawns = new List<Pawn>();
         private List<Wall> _allWalls = new List<Wall>();
         public List<Pawn> Pawns => new List<Pawn>((Pawn[]) _pawns.ToArray().Clone());
@@ -168,10 +167,6 @@ namespace Project.Classes.Field {
         }
 
         private bool IsThereWayToFinish(Wall wall) {
-            if (NumOfHorWalls <= XSize / 2) {
-                return true;
-            }
-
             var fieldWithNewWall = new Field(FieldSpaces.DeepCopy());
             fieldWithNewWall.SetWall(wall);
             return AStarQuoridor.IsTherePaths(fieldWithNewWall.FieldSpaces, Pawns, Point.ManhattanLengthFloat);
@@ -197,7 +192,6 @@ namespace Project.Classes.Field {
                 case Wall.Type.Horizontal:
                     FieldSpaces[wall.Y, wall.X - 1].Type = BlockType.Wall;
                     FieldSpaces[wall.Y, wall.X + 1].Type = BlockType.Wall;
-                    NumOfHorWalls++;
                     break;
                 case Wall.Type.Vertical:
                     FieldSpaces[wall.Y - 1, wall.X].Type = BlockType.Wall;
