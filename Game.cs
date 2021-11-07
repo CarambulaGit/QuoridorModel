@@ -38,6 +38,7 @@ namespace Project.Classes {
         public event Action GameFinished;
         public event Action<Player.Player> GameFinishedWithWinner;
         public event Action OnNextTurn;
+        public event Action OnNextPlayer;
         public event Action PlayersOrderChanged;
 
         private Game(int ySize, int xSize, List<Player.Player> players) {
@@ -127,6 +128,7 @@ namespace Project.Classes {
         private async Task WaitForMove(CancellationToken ct) {
             // stopWatch.Restart();
             CurrentPlayer.myTurn = true;
+            OnNextPlayer.Invoke();
             // await Task.Run(() => CurrentPlayer.MakeMove(ct), ct);
             var task = Task.Run(() => CurrentPlayer.MakeMove(ct), ct);
             while (!task.IsCompleted) {
