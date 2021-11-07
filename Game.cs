@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -99,6 +100,10 @@ namespace Project.Classes {
             if (!GameRunning) return;
 
             if (_waitTask.IsCompleted && !IsThereWinner(out var winner)) {
+                if (_waitTask.IsFaulted) {
+                    throw _waitTask.Exception.InnerExceptions[0];
+                }
+
                 OnNextTurn?.Invoke();
                 _waitTask = WaitForMove(_tokenSource.Token);
             }
@@ -116,8 +121,11 @@ namespace Project.Classes {
 
             return false;
         }
+        
+        // public static Stopwatch stopWatch = new Stopwatch();
 
         private async Task WaitForMove(CancellationToken ct) {
+            // stopWatch.Restart();
             CurrentPlayer.myTurn = true;
             // await Task.Run(() => CurrentPlayer.MakeMove(ct), ct);
             var task = Task.Run(() => CurrentPlayer.MakeMove(ct), ct);
@@ -125,12 +133,15 @@ namespace Project.Classes {
                 if (ct.IsCancellationRequested) {
                     return;
                 }
+
                 await Task.Yield();
             }
 
             CurrentPlayer.myTurn = false;
             CurrentPlayer = _playersEnumerator.GetNextCycled();
-            
+            // stopWatch.Stop();
+            // Debug.LogAssertion(stopWatch.ElapsedMilliseconds);
+
             if (task.IsFaulted) {
                 throw task.Exception.InnerExceptions[0];
             }
@@ -167,7 +178,7 @@ namespace Project.Classes {
             if (GameRunning) {
                 CancelGame();
             }
-            
+
             _tokenSource.Dispose();
             _tokenSource = new CancellationTokenSource();
 
@@ -194,11 +205,11 @@ namespace Project.Classes {
             if (!Players.HasSameContent(players)) {
                 return;
             }
-            
+
             if (GameRunning) {
                 CancelGame();
             }
-            
+
             _tokenSource.Dispose();
             _tokenSource = new CancellationTokenSource();
 
@@ -214,7 +225,7 @@ namespace Project.Classes {
                 new Point(yLen / 2, 0),
                 new Point(yLen / 2, xLen - 1)
             };
-            
+
             var winConditions = new Predicate<Point>[] {
                 p => p.Y == yLen - 1,
                 p => p.Y == 0,
