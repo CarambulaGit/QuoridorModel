@@ -7,10 +7,10 @@ using Project.Classes.Pathfinding;
 
 namespace Project.Classes.Player {
     public class SuperDuperUltraGiperBot : Bot {
-        private const int DEFAULT_DEPTH = 1;
+        private const int DEFAULT_DEPTH = 2;
         private const float TURN_WEIGHT = 1f;
         private const float NUM_OF_WALLS_WEIGHT = 1f;
-        private const float PATH_COUNT_WEIGHT = 5f;
+        private const float PATH_COUNT_WEIGHT = 3f;
         private int _depth;
         private bool _isFirst;
         private List<Wall> _walls = new List<Wall>();
