@@ -5,11 +5,16 @@ using Project.Classes.Field;
 
 namespace Project.Classes.Player {
     public abstract class Player : ICloneable {
+        public enum MoveType {
+            PlacingWall,
+            Moving
+        }
+        
         public bool myTurn;
-        private bool _moveDone;
+        protected bool _moveDone;
 
-        private int _numOfWalls;
-        private int _maxWalls;
+        protected int _numOfWalls;
+        protected int _maxWalls;
 
         // private IPlayerController _playerController;
         public Pawn Pawn { get; set; }
@@ -28,11 +33,11 @@ namespace Project.Classes.Player {
 
         public void DecrementNumOfWalls() => NumOfWalls--;
 
-        public bool CanSetWall => NumOfWalls > 0;
+        public bool HasWalls => NumOfWalls > 0;
 
         public event Action NumOfWallsChanged;
-        public event Action<Wall> OnWallPlaced;
-        public event Action<Point, Point> OnPawnMoved;
+        public Action<Wall> OnWallPlaced;
+        public Action<Point, Point> OnPawnMoved;
 
         public Player(Pawn pawn = null, int numOfWalls = Consts.DEFAULT_NUM_OF_WALLS) {
             Pawn = pawn;
@@ -53,10 +58,10 @@ namespace Project.Classes.Player {
             _moveDone = false;
         }
 
-        public bool TrySetWall(Wall wall) {
-            if (Pawn == null || !myTurn || _moveDone || !CanSetWall || !Pawn.Field.TrySetWall(wall)) {
-                return false;
-            }
+        public virtual bool TrySetWall(Wall wall) {
+            if (!CanSetWall(wall)) return false;
+            
+            Pawn.Field.UnsafeSetWall(wall);
 
             DecrementNumOfWalls();
             _moveDone = true;
@@ -64,14 +69,30 @@ namespace Project.Classes.Player {
             return true;
         }
 
-        public bool TryMovePawn(Point newPos) {
-            var oldPos = Pawn.Pos;
-            if (Pawn == null || !myTurn || _moveDone || !Pawn.TryMove(newPos)) {
+        public bool CanSetWall(Wall wall) {
+            if (Pawn == null || !myTurn || _moveDone || !HasWalls || !Pawn.Field.CanSetWall(wall)) {
                 return false;
             }
 
+            return true;
+        }
+
+        public virtual bool TryMovePawn(Point newPos) {
+            var oldPos = Pawn.Pos;
+            if (!CanMovePawn(newPos)) return false;
+
+            Pawn.UnsafeMove(newPos);
+
             _moveDone = true;
             OnPawnMoved?.Invoke(oldPos, newPos);
+            return true;
+        }
+
+        public bool CanMovePawn(Point newPos) {
+            if (Pawn == null || !myTurn || _moveDone || !Pawn.CanMove(newPos)) {
+                return false;
+            }
+
             return true;
         }
 

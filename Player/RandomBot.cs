@@ -8,7 +8,7 @@ namespace Project.Classes.Player {
         public RandomBot(Pawn pawn = null, int numOfWalls = Consts.DEFAULT_NUM_OF_WALLS) : base(pawn, numOfWalls){}
 
         protected override Action GetNextMove() {
-            if (!CanSetWall) return () => TryMovePawn(Pawn.GetPossibleDirections().GetRandom());
+            if (!HasWalls) return () => TryMovePawn(Pawn.GetPossibleDirections().GetRandom());
             var possibleWalls = Pawn.Field.GetPossibleWallPositions();
             var possiblePawnMoves = Pawn.GetPossibleDirections();
             var possibleWallsCount = possibleWalls.Count;

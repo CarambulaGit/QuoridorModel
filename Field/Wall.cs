@@ -17,5 +17,10 @@
             Pos = new Point(y, x);
             WallType = type;
         }
+
+        public Wall(Point point, Type type) {
+            Pos = point;
+            WallType = type;
+        }
     }
 }

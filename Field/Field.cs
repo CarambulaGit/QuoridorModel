@@ -179,8 +179,7 @@ namespace Project.Classes.Field {
             OnWallPlaced?.Invoke(wall);
             return true;
         }
-
-
+        
         public void UnsafeSetWall(Wall wall) {
             SetWall(wall);
             OnWallPlaced?.Invoke(wall);
