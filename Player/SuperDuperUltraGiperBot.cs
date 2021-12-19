@@ -121,7 +121,7 @@ namespace Project.Classes.Player {
         }
 
         private void GetPlacingWall(Field.Field field, int index, PairsList<Field.Field, Action> result) {
-            if (!field.Pawns[index].Owner.CanSetWall) {
+            if (!field.Pawns[index].Owner.HasWalls) {
                 return;
             }
 

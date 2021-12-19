@@ -38,9 +38,17 @@ namespace Project.Classes.Field {
         }
 
         public bool TryMove(Point newPos) {
-            if (!GetPossibleDirections().Contains(newPos)) return false;
+            if (!CanMove(newPos)) return false;
             Pos = newPos;
             return true;
+        }
+
+        public void UnsafeMove(Point newPos) {
+            Pos = newPos;
+        }
+
+        public bool CanMove(Point newPos) {
+            return GetPossibleDirections().Contains(newPos);
         }
 
         public List<Point> GetPossibleDirections() {
