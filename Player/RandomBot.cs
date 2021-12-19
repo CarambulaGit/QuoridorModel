@@ -5,7 +5,7 @@ namespace Project.Classes.Player {
     public class RandomBot : Bot {
         private static Random _random = new Random();
 
-        public RandomBot(Pawn pawn = null, int numOfWalls = Consts.DEFAULT_NUM_OF_WALLS) : base(pawn, numOfWalls){}
+        public RandomBot(int networkId, Pawn pawn = null, int numOfWalls = Consts.DEFAULT_NUM_OF_WALLS) : base(networkId, pawn, numOfWalls){}
 
         protected override Action GetNextMove() {
             if (!HasWalls) return () => TryMovePawn(Pawn.GetPossibleDirections().GetRandom());
@@ -20,7 +20,7 @@ namespace Project.Classes.Player {
         }
         
         public override object Clone() {
-            return new RandomBot(Pawn, NumOfWalls);
+            return new RandomBot(NetworkId, Pawn, NumOfWalls);
         }
     }
 }

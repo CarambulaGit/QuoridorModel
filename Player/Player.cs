@@ -9,7 +9,9 @@ namespace Project.Classes.Player {
             PlacingWall,
             Moving
         }
-        
+
+        public int NetworkId { get; private set; }
+
         public bool myTurn;
         protected bool _moveDone;
 
@@ -39,7 +41,8 @@ namespace Project.Classes.Player {
         public Action<Wall> OnWallPlaced;
         public Action<Point, Point> OnPawnMoved;
 
-        public Player(Pawn pawn = null, int numOfWalls = Consts.DEFAULT_NUM_OF_WALLS) {
+        public Player(int networkId, Pawn pawn = null, int numOfWalls = Consts.DEFAULT_NUM_OF_WALLS) {
+            NetworkId = networkId;
             Pawn = pawn;
             _maxWalls = numOfWalls;
             NumOfWalls = numOfWalls;
@@ -60,7 +63,7 @@ namespace Project.Classes.Player {
 
         public virtual bool TrySetWall(Wall wall) {
             if (!CanSetWall(wall)) return false;
-            
+
             Pawn.Field.UnsafeSetWall(wall);
 
             DecrementNumOfWalls();

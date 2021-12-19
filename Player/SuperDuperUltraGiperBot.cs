@@ -16,8 +16,8 @@ namespace Project.Classes.Player {
         private List<Wall> _walls = new List<Wall>();
         private Action _move; // todo
 
-        public SuperDuperUltraGiperBot(Pawn pawn = null, int numOfWalls = Consts.DEFAULT_NUM_OF_WALLS,
-            int depth = DEFAULT_DEPTH) : base(pawn, numOfWalls) {
+        public SuperDuperUltraGiperBot(int networkId, Pawn pawn = null, int numOfWalls = Consts.DEFAULT_NUM_OF_WALLS,
+            int depth = DEFAULT_DEPTH) : base(networkId, pawn, numOfWalls) {
             _depth = depth;
         }
 
@@ -224,7 +224,7 @@ namespace Project.Classes.Player {
         }
 
         public override object Clone() {
-            return new SuperDuperUltraGiperBot(Pawn, NumOfWalls, _depth);
+            return new SuperDuperUltraGiperBot(NetworkId, Pawn, NumOfWalls, _depth);
         }
     }
 }
