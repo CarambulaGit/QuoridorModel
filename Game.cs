@@ -9,6 +9,7 @@ using Project.Classes.Player;
 
 namespace Project.Classes {
     public class Game {
+        private static object locker = new object();
         private bool _gameRunning;
         private Task _waitTask;
         private IEnumerator<Player.Player> _playersEnumerator;
@@ -84,21 +85,26 @@ namespace Project.Classes {
             }
         }
 
-        public static Game CreatePlayerVsPlayer() {
-            var players = new List<Player.Player> {new LocalPlayer(), new LocalPlayer()};
+        public static Game CreatePlayerVsPlayer(int firstPlayedId, int secondPlayerId) {
+            var players = new List<Player.Player> {new LocalPlayer(firstPlayedId), new LocalPlayer(secondPlayerId)};
             return new Game(Consts.DEFAULT_FIELD_SIZE_Y, Consts.DEFAULT_FIELD_SIZE_X, players);
         }
 
-        public static Game CreatePlayerVsBot(bool playerMoveFirst = true) {
+        public static Game CreatePlayerVsBot(int firstPlayedId, int secondPlayerId, bool playerMoveFirst = true) {
             var players = playerMoveFirst
-                ? new List<Player.Player> {new LocalPlayer(), new SuperDuperUltraGiperBot()}
-                : new List<Player.Player> {new SuperDuperUltraGiperBot(), new LocalPlayer()};
+                ? new List<Player.Player> {new LocalPlayer(firstPlayedId), new SuperDuperUltraGiperBot(secondPlayerId)}
+                : new List<Player.Player> {new SuperDuperUltraGiperBot(firstPlayedId), new LocalPlayer(secondPlayerId)};
             return new Game(Consts.DEFAULT_FIELD_SIZE_Y, Consts.DEFAULT_FIELD_SIZE_X, players);
         }
 
+        public Player.Player FindPlayerWithNetworkId(int networkId) {
+            return Players.Find(player => player.NetworkId == networkId);
+        }
 
         public void Tick() {
-            if (!GameRunning) return;
+            lock (locker) {
+                if (!GameRunning) return;
+            }
 
             if (_waitTask.IsCompleted && !IsThereWinner(out var winner)) {
                 if (_waitTask.IsFaulted) {
@@ -122,13 +128,13 @@ namespace Project.Classes {
 
             return false;
         }
-        
+
         // public static Stopwatch stopWatch = new Stopwatch();
 
         private async Task WaitForMove(CancellationToken ct) {
             // stopWatch.Restart();
             CurrentPlayer.myTurn = true;
-            OnNextPlayer.Invoke();
+            OnNextPlayer?.Invoke();
             // await Task.Run(() => CurrentPlayer.MakeMove(ct), ct);
             var task = Task.Run(() => CurrentPlayer.MakeMove(ct), ct);
             while (!task.IsCompleted) {
@@ -150,15 +156,18 @@ namespace Project.Classes {
         }
 
         public void StartGame() {
-            if (GameRunning) {
-                throw new Exception("Game already going");
-            }
+            lock (locker) {
 
-            GameRunning = true;
-            _playersEnumerator.Reset();
-            CurrentPlayer = _playersEnumerator.GetNextCycled();
-            OnNextTurn?.Invoke();
-            _waitTask = WaitForMove(_tokenSource.Token);
+                if (GameRunning) {
+                    throw new Exception("Game already going");
+                }
+
+                GameRunning = true;
+                _playersEnumerator.Reset();
+                CurrentPlayer = _playersEnumerator.GetNextCycled();
+                OnNextTurn?.Invoke();
+                _waitTask = WaitForMove(_tokenSource.Token);
+            }
         }
 
         private void FinishGame(Player.Player winner) {
