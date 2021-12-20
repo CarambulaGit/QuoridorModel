@@ -5,10 +5,12 @@ using UnityEngine;
 
 namespace Project.Classes.Player {
     public class NetworkPlayer : Player {
+        public bool IsLocal { get; set; }
         public int NetworkId { get; set; }
         
-        public NetworkPlayer(int networkId, Pawn pawn = null,
+        public NetworkPlayer(int networkId, bool isLocal, Pawn pawn = null,
             int numOfWalls = Consts.DEFAULT_NUM_OF_WALLS) : base(pawn, numOfWalls) {
+            IsLocal = isLocal;
             NetworkId = networkId;
         }
 

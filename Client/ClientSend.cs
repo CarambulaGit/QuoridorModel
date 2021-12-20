@@ -21,7 +21,6 @@ public class ClientSend {
     }
     public static void SendMove(Point position) {
         using Packet _packet = new Packet((int) ClientPackets.sendMove);
-        _packet.Write(Client.instance.myId);
         _packet.Write((int) Player.MoveType.Moving);
         _packet.Write(position);
 
@@ -29,7 +28,6 @@ public class ClientSend {
     }
     public static void SendMove(Wall wall) {
         using Packet _packet = new Packet((int) ClientPackets.sendMove);
-        _packet.Write(Client.instance.myId);
         _packet.Write((int) Player.MoveType.PlacingWall);
         _packet.Write(wall.Pos);
         _packet.Write((int) wall.WallType);

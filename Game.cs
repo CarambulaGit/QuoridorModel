@@ -89,6 +89,13 @@ namespace Project.Classes {
             return new Game(Consts.DEFAULT_FIELD_SIZE_Y, Consts.DEFAULT_FIELD_SIZE_X, players);
         }
 
+        public static Game CreateNetworkPlayerVsPlayer(bool localPlayerFirst, int localPlayerId, int networkPlayerId) {
+            var players = localPlayerFirst
+                ? new List<Player.Player> {new NetworkPlayer(localPlayerId, true), new NetworkPlayer(networkPlayerId, false)}
+                : new List<Player.Player> {new NetworkPlayer(networkPlayerId, false), new NetworkPlayer(localPlayerId, true)};
+            return new Game(Consts.DEFAULT_FIELD_SIZE_Y, Consts.DEFAULT_FIELD_SIZE_X, players);
+        }
+        
         public static Game CreatePlayerVsBot(bool playerMoveFirst = true) {
             var players = playerMoveFirst
                 ? new List<Player.Player> {new LocalPlayer(), new SuperDuperUltraGiperBot()}
@@ -96,7 +103,10 @@ namespace Project.Classes {
             return new Game(Consts.DEFAULT_FIELD_SIZE_Y, Consts.DEFAULT_FIELD_SIZE_X, players);
         }
 
-
+        public Player.Player FindPlayerWithNetworkId(int networkId) {
+            return Players.Find(player => player is NetworkPlayer networkPlayer && networkPlayer.NetworkId == networkId);
+        }
+        
         public void Tick() {
             if (!GameRunning) return;
 
@@ -128,7 +138,7 @@ namespace Project.Classes {
         private async Task WaitForMove(CancellationToken ct) {
             // stopWatch.Restart();
             CurrentPlayer.myTurn = true;
-            OnNextPlayer.Invoke();
+            OnNextPlayer?.Invoke();
             // await Task.Run(() => CurrentPlayer.MakeMove(ct), ct);
             var task = Task.Run(() => CurrentPlayer.MakeMove(ct), ct);
             while (!task.IsCompleted) {
@@ -243,5 +253,6 @@ namespace Project.Classes {
             StartGame();
             PlayersOrderChanged?.Invoke();
         }
+
     }
 }
