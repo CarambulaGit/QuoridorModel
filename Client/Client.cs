@@ -15,6 +15,7 @@ public class Client {
     public int port = 26950;
     public int myId = 0;
     public TCP tcp = new TCP();
+    public bool IsConnected { get; private set; }
     private GameManager _gameManager;
 
     public GameManager GameManager {
@@ -30,9 +31,14 @@ public class Client {
 
     private static Dictionary<int, PacketHandler> packetHandlers;
 
+    ~Client() {
+        Disconnect();
+    }
+
     public void ConnectToServer() {
         InitializeClientData();
 
+        IsConnected = true;
         tcp.Connect();
     }
 
@@ -42,7 +48,7 @@ public class Client {
         private NetworkStream stream;
         private Packet receivedData;
         private byte[] receiveBuffer;
-
+        
         public void Connect() {
             socket = new TcpClient {
                 ReceiveBufferSize = dataBufferSize,
@@ -82,7 +88,7 @@ public class Client {
             try {
                 int _byteLength = stream.EndRead(_result);
                 if (_byteLength <= 0) {
-                    // TODO: disconnect
+                    instance.Disconnect();
                     return;
                 }
 
@@ -93,7 +99,7 @@ public class Client {
                 stream.BeginRead(receiveBuffer, 0, dataBufferSize, ReceiveCallback, null);
             }
             catch {
-                // TODO: disconnect
+                Disconnect();
             }
         }
 
@@ -133,6 +139,15 @@ public class Client {
 
             return false;
         }
+
+        private void Disconnect() {
+            instance.Disconnect();
+
+            stream = null;
+            receivedData = null;
+            receiveBuffer = null;
+            socket = null;
+        }
     }
 
     private void InitializeClientData() {
@@ -142,5 +157,15 @@ public class Client {
             {(int) ServerPackets.makeMove, ClientHandle.MakeMove},
         };
         Debug.Log("Initialized packets.");
+    }
+
+    private void Disconnect() {
+        if (!IsConnected) {
+            return;
+        }
+
+        IsConnected = false;
+        tcp.socket.Close();
+        Debug.Log("Disconnected");
     }
 }
