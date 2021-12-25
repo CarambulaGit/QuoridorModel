@@ -155,6 +155,7 @@ public class Client {
             {(int) ServerPackets.welcome, ClientHandle.Welcome},
             {(int) ServerPackets.startGame, ClientHandle.StartGame},
             {(int) ServerPackets.makeMove, ClientHandle.MakeMove},
+            {(int) ServerPackets.restartGame, ClientHandle.RestartGame}
         };
         Debug.Log("Initialized packets.");
     }

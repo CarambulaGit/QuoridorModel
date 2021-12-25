@@ -35,5 +35,12 @@ public class ClientSend {
         SendTCPData(_packet);
     }
 
+    public static void SendRestart()
+    {
+        using Packet _packet = new Packet((int) ClientPackets.sendRestart);
+        
+        SendTCPData(_packet);
+    }
+
     #endregion
 }

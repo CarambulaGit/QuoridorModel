@@ -45,4 +45,9 @@ public class ClientHandle {
                 throw new ArgumentOutOfRangeException();
         }
     }
+
+    public static void RestartGame(Packet _packet)
+    {
+        Client.instance.GameManager.Restart();
+    }
 }
