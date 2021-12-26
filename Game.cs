@@ -172,6 +172,7 @@ namespace Project.Classes {
 
         private void FinishGame(Player.Player winner) {
             CancelGame();
+            Console.WriteLine($"{winner} wins");
             GameFinishedWithWinner?.Invoke(winner);
         }
 
