@@ -12,7 +12,7 @@ namespace Project.Classes {
         private bool _gameRunning;
         private Task _waitTask;
         private IEnumerator<Player.Player> _playersEnumerator;
-        private CancellationTokenSource _tokenSource = new CancellationTokenSource();
+        public CancellationTokenSource _tokenSource = new CancellationTokenSource();
         public Field.Field Field { get; private set; }
         public List<Player.Player> Players { get; private set; }
         public Player.Player CurrentPlayer { get; private set; }
@@ -41,6 +41,10 @@ namespace Project.Classes {
         public event Action OnNextPlayer;
         public event Action PlayersOrderChanged;
 
+        ~Game() {
+            _tokenSource.Cancel();
+        }
+
         private Game(int ySize, int xSize, List<Player.Player> players) {
             if (players.Count < 2) {
                 throw new ArgumentException("There are must be at least 2 players");
@@ -65,15 +69,17 @@ namespace Project.Classes {
             Field = new Field.Field(xSize, ySize);
             var yLen = Field.FieldSpaces.GetLength(0);
             var xLen = Field.FieldSpaces.GetLength(1);
+
             var positions = new Point[4] {
-                new Point(yLen - 1, xLen / 2),
                 new Point(0, xLen / 2),
+                new Point(yLen - 1, xLen / 2),
                 new Point(yLen / 2, 0),
                 new Point(yLen / 2, xLen - 1)
             };
+
             var winConditions = new Predicate<Point>[] {
-                p => p.Y == 0,
                 p => p.Y == yLen - 1,
+                p => p.Y == 0,
                 p => p.X == xLen - 1,
                 p => p.X == 0,
             };
