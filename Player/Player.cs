@@ -55,7 +55,8 @@ namespace Project.Classes.Player {
                     return;
                 }
 
-                await Task.Yield();
+                // await Task.Yield();
+                await Task.Delay(1000, ct);
             }
 
             _moveDone = false;
